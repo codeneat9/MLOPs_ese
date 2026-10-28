@@ -2,7 +2,8 @@ stages:
   validate_and_prepare:
     cmd: >-
       python -m smartwaste.data
-      --raw-dir data/raw
+      --source-dir data/raw
+      --source-format final-merged
       --output-dir data/processed
       --validation-fraction ${dataset.validation_fraction}
       --test-fraction ${dataset.test_fraction}

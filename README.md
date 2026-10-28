@@ -72,6 +72,11 @@ dvc init
 dvc repro validate_and_prepare
 ```
 
+The checked-in DVC stage uses the prepared `final-merged` source format under
+`data/raw` and records its reproducibility metadata in `dvc.lock`. Place the
+local dataset at `data/raw` before reproducing the stage; the dataset itself is
+ignored and is not committed to Git.
+
 For the supplied RealWaste dataset, use the explicit documented mapping
 below without copying the original dataset into this repository:
 

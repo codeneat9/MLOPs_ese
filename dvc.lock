@@ -1,0 +1,31 @@
+schema: '2.0'
+stages:
+  validate_and_prepare:
+    cmd: python -m smartwaste.data --source-dir data/raw --source-format 
+      final-merged --output-dir data/processed --validation-fraction 0.15 
+      --test-fraction 0.15 --seed 42
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 8e22bcf1c1c82bb3d5cdc08894779703.dir
+      size: 1211613016
+      nfiles: 35168
+    - path: src/smartwaste/data.py
+      hash: md5
+      md5: d2fadf65bdf991d98349c49325c348d5
+      size: 17029
+    - path: src/smartwaste/labels.py
+      hash: md5
+      md5: 10ff7aaccbb0a85d09b25ec33117de4a
+      size: 163
+    params:
+      params.yaml:
+        dataset.test_fraction: 0.15
+        dataset.validation_fraction: 0.15
+        seed: 42
+    outs:
+    - path: data/processed
+      hash: md5
+      md5: 12ba91003b1b57a43e4e53b0ea7c37bb.dir
+      size: 780739941
+      nfiles: 18235
