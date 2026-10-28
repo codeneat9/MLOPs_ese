@@ -1,0 +1,41 @@
+stages:
+  validate_and_prepare:
+    cmd: >-
+      python -m smartwaste.data
+      --raw-dir data/raw
+      --output-dir data/processed
+      --validation-fraction ${dataset.validation_fraction}
+      --test-fraction ${dataset.test_fraction}
+      --seed ${seed}
+    deps:
+      - src/smartwaste/data.py
+      - src/smartwaste/labels.py
+      - data/raw
+    params:
+      - seed
+      - dataset.validation_fraction
+      - dataset.test_fraction
+    outs:
+      - data/processed
+
+  train:
+    cmd: python -m smartwaste.train
+    deps:
+      - src/smartwaste/training.py
+      - data/processed/manifest.csv
+    params:
+      - seed
+      - training
+    outs:
+      - models/candidate
+
+  evaluate:
+    cmd: python -m smartwaste.evaluate
+    deps:
+      - src/smartwaste/evaluate.py
+      - models/candidate
+      - data/processed/manifest.csv
+    params:
+      - seed
+    outs:
+      - artifacts/evaluation

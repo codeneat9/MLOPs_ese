@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.python-version
+.coverage
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Local data and generated artifacts
+data/raw/
+data/processed/
+data/processed*/
+data/metadata/
+data/final_merged_dataset/
+models/
+artifacts/
+mlruns/
+*.db
+*.sqlite
+*.sqlite3
+
+# DVC cache and local remotes
+.dvc/cache/
+.dvc/tmp/
+
+# IDE and OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

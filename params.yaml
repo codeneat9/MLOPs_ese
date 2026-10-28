@@ -1,0 +1,21 @@
+seed: 42
+
+dataset:
+  image_size: 224
+  classes:
+    - plastic
+    - paper
+    - glass
+    - metal
+    - organic
+  validation_fraction: 0.15
+  test_fraction: 0.15
+
+training:
+  epochs: 20
+  batch_size: 32
+  learning_rate: 0.0001
+  early_stopping_patience: 5
+  num_workers: 2
+  pretrained: true
+
