@@ -41,6 +41,7 @@ dev = [
 ]
 dvc = [
     "dvc==3.58.0",
+    "pathspec==0.12.1",
 ]
 
 [tool.setuptools.packages.find]
