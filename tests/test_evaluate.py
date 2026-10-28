@@ -1,6 +1,5 @@
-from pathlib import Path
-
 import json
+from pathlib import Path
 
 from smartwaste.evaluate import calculate_metrics, save_evaluation
 

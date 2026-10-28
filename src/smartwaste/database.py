@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from collections.abc import Generator
+from datetime import UTC, datetime
 from functools import lru_cache
-from typing import Generator
 
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, create_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, sessionmaker
@@ -26,7 +26,7 @@ class PredictionRecord(Base):
     model_version: Mapped[str] = mapped_column(String(128))
     latency_ms: Mapped[float] = mapped_column(Float)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
 
 
@@ -41,7 +41,7 @@ class FeedbackRecord(Base):
     reviewed: Mapped[bool] = mapped_column(Boolean, default=False)
     accepted_for_training: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
 
 

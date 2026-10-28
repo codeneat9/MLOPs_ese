@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import argparse
 import ssl
-from urllib.error import URLError
 from pathlib import Path
+from urllib.error import URLError
 
 import yaml
 

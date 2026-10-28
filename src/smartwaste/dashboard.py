@@ -121,7 +121,7 @@ def _render_metrics() -> None:
     columns = st.columns(4)
     for column, key in zip(
         columns,
-        ("accuracy", "macro_precision", "macro_recall", "macro_f1"),
+        ("accuracy", "macro_precision", "macro_recall", "macro_f1"), strict=False,
     ):
         column.metric(key.replace("_", " ").title(), f"{metrics[key]:.2%}")
     per_class = pd.DataFrame(metrics["per_class"]).T.reset_index(names="class")
@@ -137,6 +137,30 @@ def _render_metrics() -> None:
         ),
         use_container_width=True,
     )
+
+
+def _render_monitoring() -> None:
+    st.header("Prediction monitoring")
+    try:
+        report = _request("GET", "/monitoring/summary").json()
+    except RuntimeError as error:
+        st.error(str(error))
+        return
+    if report["drift_detected"]:
+        for warning in report["warnings"]:
+            st.warning(warning)
+    else:
+        st.success("No configured prediction drift thresholds were exceeded.")
+    st.json(report["metrics"])
+    distribution = pd.DataFrame(
+        {
+            "class": list(report["reference_distribution"]),
+            "reference": list(report["reference_distribution"].values()),
+            "current": list(report["current_distribution"].values()),
+        }
+    ).melt(id_vars="class", var_name="dataset", value_name="share")
+    st.plotly_chart(px.bar(distribution, x="class", y="share", color="dataset", barmode="group"),
+                    use_container_width=True)
 
 
 def _render_upload_page() -> None:
@@ -160,6 +184,7 @@ def _render_camera_page() -> None:
     try:
         from av import VideoFrame
         from streamlit_webrtc import WebRtcMode, webrtc_streamer
+
         from smartwaste.config import get_settings
         from smartwaste.inference import ModelPredictor
     except ImportError:
@@ -229,7 +254,7 @@ def _render_camera_page() -> None:
 
 def _overlay_prediction(image: Any, label: str, confidence: float) -> Any:
     """Render the current live prediction directly onto a video frame."""
-    from PIL import ImageDraw, ImageFont
+    from PIL import ImageDraw
 
     pil_image = Image.fromarray(image)
     draw = ImageDraw.Draw(pil_image)
@@ -242,15 +267,19 @@ def _overlay_prediction(image: Any, label: str, confidence: float) -> Any:
 def main() -> None:
     """Render the Streamlit dashboard."""
     st.set_page_config(page_title="SmartWaste", page_icon="♻️", layout="wide")
-    page = st.sidebar.radio("Page", ["Classify image", "Live Camera", "History", "Metrics"])
+    page = st.sidebar.radio(
+        "Page", ["Classify image", "Live Camera", "History", "Metrics", "Monitoring"]
+    )
     if page == "Classify image":
         _render_upload_page()
     elif page == "Live Camera":
         _render_camera_page()
     elif page == "History":
         _render_history()
-    else:
+    elif page == "Metrics":
         _render_metrics()
+    else:
+        _render_monitoring()
 
 
 if __name__ == "__main__":

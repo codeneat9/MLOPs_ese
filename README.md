@@ -118,7 +118,53 @@ dvc push
 4. **Serving and persistence:** FastAPI inference, SQLAlchemy prediction logs,
    reviewed feedback, and model approval metadata.
 5. **Monitoring and operations:** Streamlit/Plotly dashboard, webcam page,
-   drift warnings, controlled retraining, Docker Compose, and CI.
+   local drift reports, controlled retraining, Docker Compose, and CI/CD.
+
+### Monitoring and controlled retraining
+
+Create a reference prediction file with columns `predicted_class,confidence`,
+then generate a local drift report from recent SQLite predictions:
+
+```bash
+python -m smartwaste.monitoring \
+  --reference data/monitoring/reference.csv \
+  --output artifacts/monitoring/drift.json
+```
+
+The report uses population stability index (PSI) for class-distribution drift
+and mean-confidence change. PSI `0.20` and a confidence drop of `0.05` are the
+default warning thresholds. The API exposes the report at
+`GET /monitoring/summary`, and the dashboard displays warnings and distributions.
+
+Reviewed feedback is eligible for retraining only after an explicit review
+accepts it:
+
+```bash
+python -m smartwaste.retraining \
+  --checkpoint models/candidate/best.pt \
+  --metrics artifacts/evaluation/metrics.json \
+  --baseline-metrics artifacts/evaluation_final_merged/metrics.json
+```
+
+This exports accepted feedback to `data/feedback/accepted.jsonl`, requires the
+candidate to meet the default minimum of one accepted feedback record and
+minimum accuracy/F1 thresholds, rejects regressions greater than two percentage
+points against the approved baseline, and only then promotes the checkpoint
+into `models/approved/`. Use `--minimum-feedback` to change the retraining
+trigger.
+
+### Container build and deployment workflow
+
+Run the local deployment with:
+
+```bash
+docker compose up --build
+```
+
+The API is available on port 8000 and the dashboard on port 8501. The
+`Container deployment` GitHub Actions workflow runs only after a successful CI
+workflow and packages the tested Docker image as an Actions artifact. It does
+not require or configure a cloud registry.
 
 ## Known compatibility risks
 

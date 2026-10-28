@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     approved_model_dir: Path = Path("models/approved")
     approved_model_manifest: Path = Path("models/approved/manifest.json")
     evaluation_metrics_path: Path = Path("artifacts/evaluation/metrics.json")
+    monitoring_report_path: Path = Path("artifacts/monitoring/drift.json")
+    monitoring_reference_path: Path = Path("data/monitoring/reference.csv")
     database_url: str = "sqlite:///./smartwaste.db"
     mlflow_tracking_uri: str = "file:./mlruns"
     mlflow_experiment: str = "smartwaste-classification"

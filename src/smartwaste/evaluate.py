@@ -37,6 +37,7 @@ def main() -> int:
 
     try:
         import torch
+
         from smartwaste.training import TrainingConfig, build_model, create_dataloaders, get_device
     except ImportError as error:
         raise RuntimeError(
@@ -109,7 +110,7 @@ def save_evaluation(metrics: dict[str, Any], output_dir: Path) -> None:
     lines = [",".join(["actual/predicted", *CANONICAL_CLASSES])]
     lines.extend(
         ",".join([label, *(str(value) for value in row)])
-        for label, row in zip(CANONICAL_CLASSES, matrix)
+        for label, row in zip(CANONICAL_CLASSES, matrix, strict=False)
     )
     (output_dir / "confusion_matrix.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
     try:

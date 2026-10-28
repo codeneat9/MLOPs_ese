@@ -60,6 +60,7 @@ class ModelPredictor:
             )
         try:
             import torch
+
             from smartwaste.training import build_model, get_device
         except ImportError as error:
             raise ModelUnavailableError(
@@ -90,8 +91,9 @@ class ModelPredictor:
         self._ensure_loaded()
         assert self._image_size is not None
         try:
-            from smartwaste.training import build_transforms
             import torch
+
+            from smartwaste.training import build_transforms
 
             with Image.open(io.BytesIO(image_bytes)) as image:
                 image.verify()

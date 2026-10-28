@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -46,12 +46,16 @@ def approve_candidate(
     if baseline_metrics_path:
         baseline = load_metrics(baseline_metrics_path)
         if metrics["accuracy"] < baseline["accuracy"] - 0.02:
-            raise ModelGovernanceError("Candidate accuracy regressed more than 2 percentage points.")
+            raise ModelGovernanceError(
+                "Candidate accuracy regressed more than 2 percentage points."
+            )
         if metrics["macro_f1"] < baseline["macro_f1"] - 0.02:
-            raise ModelGovernanceError("Candidate macro F1 regressed more than 2 percentage points.")
+            raise ModelGovernanceError(
+                "Candidate macro F1 regressed more than 2 percentage points."
+            )
 
     approved_dir.mkdir(parents=True, exist_ok=True)
-    version = f"model-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}"
+    version = f"model-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}"
     destination = approved_dir / f"{version}.pt"
     shutil.copy2(checkpoint_path, destination)
     manifest = {
@@ -60,10 +64,12 @@ def approve_candidate(
         "source_checkpoint": str(checkpoint_path),
         "metrics": metrics,
         "classes": list(CANONICAL_CLASSES),
-        "approved_at": datetime.now(timezone.utc).isoformat(),
+        "approved_at": datetime.now(UTC).isoformat(),
     }
     manifest_path = approved_dir / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return manifest
 
 
@@ -77,7 +83,9 @@ def rollback(approved_dir: Path) -> dict[str, Any]:
     if len(entries) < 2:
         raise ModelGovernanceError("No previous approved model is available for rollback.")
     previous = entries[-2]
-    manifest_path.write_text(json.dumps(previous, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest_path.write_text(
+        json.dumps(previous, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return previous
 
 

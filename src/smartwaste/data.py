@@ -8,9 +8,9 @@ import hashlib
 import json
 import shutil
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Iterable
 
 from PIL import Image, UnidentifiedImageError
 from sklearn.model_selection import train_test_split

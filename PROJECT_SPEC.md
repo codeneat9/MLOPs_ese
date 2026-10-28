@@ -48,21 +48,21 @@ contains 3,939 valid images, with no unreadable files or duplicate hash groups.
 | Reproducible stratified splits | VERIFIED | `data/processed/manifest.csv`; seed 42 |
 | EfficientNet-B0 transfer learning | VERIFIED | `src/smartwaste/training.py`; merged-dataset approved checkpoint |
 | Actual held-out evaluation | VERIFIED | `artifacts/evaluation_final_merged/metrics.json` |
-| DVC data/training/evaluation pipeline | IN PROGRESS | `dvc.yaml` exists; DVC reproduction and remote are not verified |
-| MLflow experiment tracking | NOT STARTED | Optional hook exists; no MLflow run evidence found |
+| DVC data/training/evaluation pipeline | IMPLEMENTED LOCALLY | `dvc.yaml` defines validation, training, and evaluation stages; cloud remotes remain out of scope |
+| MLflow experiment tracking | IMPLEMENTED LOCALLY | Optional tracking hook in `src/smartwaste/training.py`; local run data exists under `mlruns/` |
 | Approved model registry and rollback | VERIFIED | `src/smartwaste/governance.py`; two approved versions and promotion history |
 | FastAPI inference API | VERIFIED | `src/smartwaste/api.py`; mocked tests and real checkpoint smoke test |
 | Image upload interface | IMPLEMENTED | `src/smartwaste/dashboard.py`; API-backed upload view |
 | Live webcam page | VERIFIED | `streamlit-webrtc` continuous frames with throttled local inference and prediction overlay |
 | Prediction database/history | VERIFIED | SQLite/SQLAlchemy records and `GET /predictions` |
 | Reviewed feedback workflow | VERIFIED | `POST /feedback` and explicit review endpoint |
-| Monitoring and drift reports | NOT STARTED | Dashboard metrics are implemented; Evidently drift integration is not implemented |
-| Controlled retraining gates | NOT STARTED | Candidate comparison and approval criteria are not implemented |
+| Monitoring and drift reports | IMPLEMENTED LOCALLY | `src/smartwaste/monitoring.py` compares reference/current predictions using PSI and confidence thresholds; API/dashboard expose warnings |
+| Controlled retraining gates | IMPLEMENTED LOCALLY | `src/smartwaste/retraining.py` exports reviewed feedback, enforces a feedback trigger, baseline comparison, and promotion thresholds |
 | AWS S3 artifact integration | NOT STARTED | Requires AWS credentials/bucket and live verification |
 | Cloud API deployment | BLOCKED | No hosting account, service configuration, or deployment evidence |
-| Docker Compose deployment | NOT STARTED | No Dockerfile or Compose file exists |
-| GitHub Actions CI | IMPLEMENTED | `.github/workflows/ci.yml`; successful remote CI run is not verified |
-| Architecture and setup documentation | IN PROGRESS | `README.md` and this specification; diagrams and demo evidence remain |
+| Docker Compose deployment | IMPLEMENTED LOCALLY | `Dockerfile` and `docker-compose.yml` provide API/dashboard services; local Docker execution is not verified because Docker is unavailable here |
+| GitHub Actions CI/CD | IMPLEMENTED | `.github/workflows/ci.yml` runs tests/lint; `.github/workflows/deploy.yml` builds and packages the image after successful CI; remote run evidence is not verified |
+| Architecture and setup documentation | IMPLEMENTED | `README.md` and this specification document setup, monitoring, retraining, and container deployment; presentation screenshots remain |
 | Screenshots and presentation evidence | BLOCKED | Must be captured from the real completed application |
 
 ## Verified experimental results

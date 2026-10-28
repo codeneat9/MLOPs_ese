@@ -52,6 +52,21 @@ def test_health_classes_and_metrics(tmp_path: Path) -> None:
     assert client.get("/metrics/summary").json() == {"accuracy": 0.9}
 
 
+def test_monitoring_summary_is_available_when_report_exists(tmp_path: Path) -> None:
+    report_path = tmp_path / "drift.json"
+    report_path.write_text(json.dumps({"drift_detected": False}), encoding="utf-8")
+    settings = Settings(
+        monitoring_report_path=report_path,
+        model_checkpoint=tmp_path / "missing.pt",
+        database_url=f"sqlite:///{tmp_path / 'monitoring.db'}",
+    )
+
+    response = TestClient(create_app(settings, FakePredictor())).get("/monitoring/summary")
+
+    assert response.status_code == 200
+    assert response.json() == {"drift_detected": False}
+
+
 def test_predict_returns_probabilities_and_request_id(tmp_path: Path) -> None:
     response = _client(tmp_path).post(
         "/predict",

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import uuid
-from pathlib import Path
 from collections.abc import Generator
 from typing import Annotated, Protocol
 
@@ -105,7 +104,9 @@ def create_app(settings: Settings | None = None, predictor: Predictor | None = N
     model_version: str | None = None
     if runtime_settings.approved_model_manifest.is_file():
         try:
-            manifest = json.loads(runtime_settings.approved_model_manifest.read_text(encoding="utf-8"))
+            manifest = json.loads(
+                runtime_settings.approved_model_manifest.read_text(encoding="utf-8")
+            )
             checkpoint = runtime_settings.approved_model_manifest.parent / manifest["checkpoint"]
             model_version = manifest["version"]
         except (OSError, json.JSONDecodeError, KeyError):
@@ -249,7 +250,21 @@ def create_app(settings: Settings | None = None, predictor: Predictor | None = N
         try:
             return json.loads(metrics_path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as error:
-            raise HTTPException(status_code=500, detail="Evaluation metrics could not be read.") from error
+            raise HTTPException(
+                status_code=500, detail="Evaluation metrics could not be read."
+            ) from error
+
+    @app.get("/monitoring/summary")
+    def monitoring_summary() -> dict[str, object]:
+        report_path = runtime_settings.monitoring_report_path
+        if not report_path.is_file():
+            raise HTTPException(status_code=404, detail="Monitoring report is unavailable.")
+        try:
+            return json.loads(report_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise HTTPException(
+                status_code=500, detail="Monitoring report could not be read."
+            ) from error
 
     return app
 
